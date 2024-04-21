@@ -1,8 +1,27 @@
 parameters:
-    torfs_io.monitoring.endpoint: "%env(resolve:TORFS_IO_MONITORING_ENDPOINT)%"
-    torfs_io.monitoring.project: "%env(resolve:TORFS_IO_MONITORING_PROJECT)%"
-    torfs_io.monitoring.environment: "%kernel.environment%"
-    torfs_io.monitoring.secret: "%env(resolve:TORFS_IO_MONITORING_SECRET)%"
+    torfs_io_monitoring.endpoint: "%env(resolve:TORFS_IO_MONITORING_ENDPOINT)%"
+    torfs_io_monitoring.project: "%env(resolve:TORFS_IO_MONITORING_PROJECT)%"
+    torfs_io_monitoring.environment: "%kernel.environment%"
+    torfs_io_monitoring.secret: "%env(resolve:TORFS_IO_MONITORING_SECRET)%"
 
 services:
+    TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter:
+        arguments:
+            $httpClient: '@http_client'
+            $endpoint: "%torfs_io_monitoring.endpoint%"
+            $project: '%torfs_io_monitoring.project%'
+            $environment: '%torfs_io_monitoring.environment%'
+            $secret: '%torfs_io_monitoring.secret%'
 
+    TorfsICT\Bundle\CodeMonitoringBundle\EventListener\ExceptionListener:
+        arguments:
+            $security: '@Symfony\Bundle\SecurityBundle\Security'
+            $writer: '@TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter'
+            $logDir: '%kernel.logs_dir%'
+        tags:
+            - name: kernel.event_listener
+              event: kernel.exception
+              method: 'http'
+            - name: kernel.event_listener
+              event: console.error
+              method: 'cli'
