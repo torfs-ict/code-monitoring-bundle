@@ -1,0 +1,8 @@
+parameters:
+    torfs_io.monitoring.endpoint: "%env(resolve:TORFS_IO_MONITORING_ENDPOINT)%"
+    torfs_io.monitoring.project: "%env(resolve:TORFS_IO_MONITORING_PROJECT)%"
+    torfs_io.monitoring.environment: "%kernel.environment%"
+    torfs_io.monitoring.secret: "%env(resolve:TORFS_IO_MONITORING_SECRET)%"
+
+services:
+
