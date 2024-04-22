@@ -17,10 +17,10 @@
     },
     "require": {
         "php": ">=8.2",
-        "symfony/framework-bundle": "*",
-        "symfony/http-client": "*",
-        "symfony/security-bundle": "*",
-        "symfony/property-access": "*"
+        "symfony/framework-bundle": ">=5",
+        "symfony/http-client": ">=5",
+        "symfony/security-bundle": ">=5",
+        "symfony/property-access": ">=5"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "*",
