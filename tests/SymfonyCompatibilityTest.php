@@ -30,7 +30,7 @@ class SymfonyCompatibilityTest extends BundleCompatibilityTestCase
 
     public function symfonyVersionProvider(): array
     {
-        return [['5.4']];
+        return [['5.4'], ['6.4'], ['7.0']];
     }
 
     public function postCompatibilityTest(string $version): void
