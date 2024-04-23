@@ -4,22 +4,18 @@ declare(strict_types=1);
 
 namespace TorfsICT\Bundle\CodeMonitoringBundle;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use TorfsICT\Bundle\CodeMonitoringBundle\Polyfill\AbstractBundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+use TorfsICT\Bundle\CodeMonitoringBundle\DependencyInjection\CodeMonitoringExtension;
 
-class CodeMonitoringBundle extends AbstractBundle
+class CodeMonitoringBundle extends Bundle
 {
     public function getPath(): string
     {
         return \dirname(__DIR__);
     }
 
-    /**
-     * @param mixed[] $config
-     */
-    public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
+    public function getContainerExtension(): CodeMonitoringExtension
     {
-        $container->import($this->getPath().'/config/services.yaml');
+        return new CodeMonitoringExtension();
     }
 }

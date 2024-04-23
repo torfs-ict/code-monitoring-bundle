@@ -5,7 +5,8 @@ parameters:
     torfs_io_monitoring.secret: "%env(resolve:TORFS_IO_MONITORING_SECRET)%"
 
 services:
-    TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter:
+    torfs_io_monitoring.writer:
+        class: TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter
         arguments:
             $httpClient: '@http_client'
             $endpoint: "%torfs_io_monitoring.endpoint%"
@@ -13,11 +14,13 @@ services:
             $environment: '%torfs_io_monitoring.environment%'
             $secret: '%torfs_io_monitoring.secret%'
 
-    TorfsICT\Bundle\CodeMonitoringBundle\EventListener\ExceptionListener:
+    torfs_io_monitoring.exception_listener:
+        class: TorfsICT\Bundle\CodeMonitoringBundle\EventListener\ExceptionListener
         arguments:
-            $security: '@Symfony\Bundle\SecurityBundle\Security'
-            $writer: '@TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter'
+            $tokenStorage: '@security.token_storage'
+            $writer: '@torfs_io_monitoring.writer'
             $logDir: '%kernel.logs_dir%'
+            $endpoint: "%torfs_io_monitoring.endpoint%"
         tags:
             - name: kernel.event_listener
               event: kernel.exception

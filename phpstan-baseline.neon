@@ -1,21 +1,2 @@
 parameters:
-	ignoreErrors:
-		-
-			message: "#^Method TorfsICT\\\\Bundle\\\\CodeMonitoringBundle\\\\Polyfill\\\\AbstractBundle\\:\\:getContainerExtension\\(\\) should return Symfony\\\\Component\\\\DependencyInjection\\\\Extension\\\\ExtensionInterface\\|null but returns Symfony\\\\Component\\\\DependencyInjection\\\\Extension\\\\ExtensionInterface\\|false\\.$#"
-			count: 1
-			path: src/Polyfill/AbstractBundle.php
-
-		-
-			message: "#^Method TorfsICT\\\\Bundle\\\\CodeMonitoringBundle\\\\Polyfill\\\\AbstractBundle\\:\\:loadExtension\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Polyfill/AbstractBundle.php
-
-		-
-			message: "#^Parameter \\#1 \\$id of static method Symfony\\\\Component\\\\DependencyInjection\\\\Container\\:\\:underscore\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: src/Polyfill/AbstractBundle.php
-
-		-
-			message: "#^Parameter \\#1 \\$path of function dirname expects string, string\\|false given\\.$#"
-			count: 1
-			path: src/Polyfill/AbstractBundle.php
+	ignoreErrors: []

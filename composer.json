@@ -15,23 +15,33 @@
             "TorfsICT\\Bundle\\CodeMonitoringBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "TorfsICT\\Bundle\\CodeMonitoringBundle\\Tests\\": "tests/"
+        }
+    },
     "require": {
-        "php": ">=8.2",
-        "symfony/framework-bundle": ">=5",
-        "symfony/http-client": ">=5",
-        "symfony/security-bundle": ">=5",
-        "symfony/property-access": ">=5"
+        "php": ">=7.2.5",
+        "symfony/config": "5.*",
+        "symfony/console": "5.*",
+        "symfony/dependency-injection": "5.*",
+        "symfony/http-client": "5.*",
+        "symfony/http-kernel": "5.*",
+        "symfony/property-access": "5.*",
+        "symfony/security-core": "5.*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "*",
         "phpstan/extension-installer": "^1.3",
         "phpstan/phpstan": "^1.10",
-        "phpstan/phpstan-doctrine": "^1.3",
         "phpstan/phpstan-symfony": "^1.3",
         "phpro/grumphp-shim": "^2.3",
         "symfony/dotenv": "*",
         "symfony/flex": "^2.4",
-        "torfs-ict/code-quality-pack": "^1.0"
+        "torfs-ict/code-quality-pack": "^1.0",
+        "symfony/phpunit-bridge": "^7.0",
+        "symfony/process": "5.*",
+        "torfs-ict/phpunit-test-cases": "^1.0"
     },
     "config": {
         "allow-plugins": {
