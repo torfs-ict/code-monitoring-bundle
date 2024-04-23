@@ -14,10 +14,15 @@ services:
             $environment: '%torfs_io_monitoring.environment%'
             $secret: '%torfs_io_monitoring.secret%'
 
+    torfs_io_monitoring.renderer:
+        class: TorfsICT\Bundle\CodeMonitoringBundle\ExceptionRenderer\ExceptionRenderer
+        arguments:
+            $tokenStorage: '@security.token_storage'
+
     torfs_io_monitoring.exception_listener:
         class: TorfsICT\Bundle\CodeMonitoringBundle\EventListener\ExceptionListener
         arguments:
-            $tokenStorage: '@security.token_storage'
+            $renderer: '@torfs_io_monitoring.renderer'
             $writer: '@torfs_io_monitoring.writer'
             $logDir: '%kernel.logs_dir%'
             $endpoint: "%torfs_io_monitoring.endpoint%"
