@@ -24,17 +24,24 @@ final readonly class ExceptionRenderer
 
     public function getUserIdentifier(): ?string
     {
-        $user = null;
+        $ret = null;
 
         $token = $this->tokenStorage->getToken();
         if (null !== $token) {
             $user = $token->getUser();
             if ($user instanceof UserInterface) {
-                return $user->getUserIdentifier();
+                $ret = $user->getUserIdentifier();
+
+                if ($token instanceof SwitchUserToken) {
+                    $impersonator = $token->getOriginalToken()->getUser();
+                    if ($impersonator instanceof UserInterface) {
+                        $ret = sprintf('%s as %s', $impersonator->getUserIdentifier(), $ret);
+                    }
+                }
             }
         }
 
-        return $user;
+        return $ret;
     }
 
     /**
