@@ -3,6 +3,7 @@ parameters:
     torfs_io_monitoring.project: "%env(resolve:TORFS_IO_MONITORING_PROJECT)%"
     torfs_io_monitoring.environment: "%kernel.environment%"
     torfs_io_monitoring.secret: "%env(resolve:TORFS_IO_MONITORING_SECRET)%"
+    torfs_io_monitoring.spool: "%env(resolve:default::TORFS_IO_MONITORING_SPOOL)%"
 
 services:
     torfs_io_monitoring.writer:
@@ -13,6 +14,7 @@ services:
             $project: '%torfs_io_monitoring.project%'
             $environment: '%torfs_io_monitoring.environment%'
             $secret: '%torfs_io_monitoring.secret%'
+            $spool: '%torfs_io_monitoring.spool%'
 
     torfs_io_monitoring.renderer:
         class: TorfsICT\Bundle\CodeMonitoringBundle\ExceptionRenderer\ExceptionRenderer
@@ -40,3 +42,10 @@ services:
             - name: kernel.event_listener
               event: console.error
               method: 'cli'
+
+    torfs_io_monitoring.spool_command:
+        class: TorfsICT\Bundle\CodeMonitoringBundle\Command\SendSpoolCommand
+        arguments:
+            $writer: '@torfs_io_monitoring.writer'
+        tags:
+            - console.command
