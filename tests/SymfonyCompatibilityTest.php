@@ -35,7 +35,9 @@ class SymfonyCompatibilityTest extends BundleCompatibilityTestCase
 
     public function postCompatibilityTest(string $version): void
     {
-        $this->assertServiceExists('torfs_io_monitoring.exception_listener', 'prod');
         $this->assertServiceExists('torfs_io_monitoring.writer', 'prod');
+        $this->assertServiceExists('torfs_io_monitoring.renderer', 'prod');
+        $this->assertServiceExists('torfs_io_monitoring.deprecation_handler', 'prod');
+        $this->assertServiceExists('torfs_io_monitoring.exception_listener', 'prod');
     }
 }
