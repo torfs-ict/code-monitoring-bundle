@@ -63,6 +63,7 @@ final readonly class ApiWriter
             'secret' => $this->secret,
             'file' => $throwable->getFile(),
             'line' => $throwable->getLine(),
+            'user' => $this->renderer->getUserIdentifier(),
             'message' => $throwable->getMessage(),
             'contents' => $this->renderer->render($throwable),
         ];
