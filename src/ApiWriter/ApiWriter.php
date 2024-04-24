@@ -58,9 +58,6 @@ final readonly class ApiWriter
     private function toArray(\Throwable $throwable): array
     {
         return [
-            'project' => $this->project,
-            'environment' => $this->environment,
-            'secret' => $this->secret,
             'file' => $throwable->getFile(),
             'line' => $throwable->getLine(),
             'user' => $this->renderer->getUserIdentifier(),
@@ -87,6 +84,12 @@ final readonly class ApiWriter
      */
     private function post(string $url, array $json): void
     {
+        $json = array_merge($json, [
+            'project' => $this->project,
+            'environment' => $this->environment,
+            'secret' => $this->secret,
+        ]);
+
         $this->httpClient->request('POST', $url, [
             'json' => $json,
             'headers' => [
