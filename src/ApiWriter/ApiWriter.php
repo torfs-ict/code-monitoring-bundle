@@ -76,7 +76,9 @@ final readonly class ApiWriter
         // Use a hash of the array to create the filename to prevent duplicate files
         $hash = hash('crc32', serialize($json));
         $path = sprintf('%s/spool.%s-%s', $this->spool, $type, $hash);
-        file_put_contents($path, json_encode($json));
+        if (!file_exists($path)) {
+            file_put_contents($path, json_encode($json));
+        }
     }
 
     /**
@@ -117,11 +119,20 @@ final readonly class ApiWriter
                 continue;
             }
 
+            $seen = $file->getCTime();
             $renamed = $file->getPathname().'.sending';
             rename($file->getPathname(), $renamed);
 
             /** @var array<string, mixed> $json */
             $json = json_decode((string) file_get_contents($renamed), true);
+
+            if (false !== $seen) {
+                $seen = \DateTimeImmutable::createFromFormat('U', (string) $seen);
+                if ($seen instanceof \DateTimeImmutable) {
+                    $json['_seen'] = $seen->format(\DateTimeInterface::ATOM);
+                }
+            }
+
             $this->post($this->url.'/'.$type, $json);
             unlink($renamed);
         }
