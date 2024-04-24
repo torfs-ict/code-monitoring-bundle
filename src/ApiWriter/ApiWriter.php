@@ -17,12 +17,12 @@ final readonly class ApiWriter
         private string $environment,
         private string $secret,
     ) {
-        $this->url = sprintf('%s/monitoring/exception', $this->endpoint);
+        $this->url = sprintf('%s/monitoring', $this->endpoint);
     }
 
     public function exception(string $title, string $contents, bool $caught): void
     {
-        $this->httpClient->request('POST', $this->url, [
+        $this->httpClient->request('POST', $this->url.'/exception', [
             'json' => [
                 'project' => $this->project,
                 'environment' => $this->environment,
@@ -30,6 +30,24 @@ final readonly class ApiWriter
                 'title' => $title,
                 'contents' => $contents,
                 'caught' => $caught,
+            ],
+            'headers' => [
+                'Content-Type' => 'application/ld+json',
+            ],
+        ]);
+    }
+
+    public function deprecation(string $file, int $line, string $message, string $contents): void
+    {
+        $this->httpClient->request('POST', $this->url.'/deprecation', [
+            'json' => [
+                'project' => $this->project,
+                'environment' => $this->environment,
+                'secret' => $this->secret,
+                'file' => $file,
+                'line' => $line,
+                'message' => $message,
+                'contents' => $contents,
             ],
             'headers' => [
                 'Content-Type' => 'application/ld+json',

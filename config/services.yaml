@@ -19,6 +19,13 @@ services:
         arguments:
             $tokenStorage: '@security.token_storage'
 
+    torfs_io_monitoring.deprecation_handler:
+        class: TorfsICT\Bundle\CodeMonitoringBundle\DeprecationHandler\DeprecationHandler
+        arguments:
+            $writer: '@torfs_io_monitoring.writer'
+            $renderer: '@torfs_io_monitoring.renderer'
+            $endpoint: "%torfs_io_monitoring.endpoint%"
+
     torfs_io_monitoring.exception_listener:
         class: TorfsICT\Bundle\CodeMonitoringBundle\EventListener\ExceptionListener
         arguments:
