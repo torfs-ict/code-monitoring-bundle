@@ -53,16 +53,8 @@ readonly class ExceptionListener
         }
 
         $name = explode(' ', microtime());
-        $caught = '';
-        if ($throwable instanceof CaughtException) {
-            $throwable = $throwable->getCaughtException();
-            $caught = 'caught_';
-        }
-        $path = sprintf('%s/%s%s%s.log', $this->directory, $caught, $name[1], mb_substr($name[0], 1));
-
         $contents = $this->renderer->render($throwable);
 
-        file_put_contents($path, $contents);
         $this->writer->exception($throwable->getMessage(), $contents, '' !== $caught);
     }
 
