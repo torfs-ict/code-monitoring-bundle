@@ -7,17 +7,13 @@ namespace TorfsICT\Bundle\CodeMonitoringBundle\DeprecationHandler;
 use Monolog\Handler\Handler;
 use Monolog\LogRecord;
 use TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter;
-use TorfsICT\Bundle\CodeMonitoringBundle\ExceptionRenderer\ExceptionRenderer;
 
 final class DeprecationHandler extends Handler
 {
     private bool $enabled;
 
-    public function __construct(
-        private readonly ApiWriter $writer,
-        private readonly ExceptionRenderer $renderer,
-        string $endpoint,
-    ) {
+    public function __construct(private readonly ApiWriter $writer, string $endpoint)
+    {
         $this->enabled = !empty($endpoint);
     }
 
@@ -47,14 +43,7 @@ final class DeprecationHandler extends Handler
         }
 
         if ($exception instanceof \Throwable) {
-            $contents = $this->renderer->render($exception);
-
-            $this->writer->deprecation(
-                $exception->getFile(),
-                $exception->getLine(),
-                substr($exception->getMessage(), 0, 255),
-                $contents,
-            );
+            $this->writer->deprecation($exception);
 
             return true;
         }

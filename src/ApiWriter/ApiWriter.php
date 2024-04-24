@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use TorfsICT\Bundle\CodeMonitoringBundle\Exception\CaughtException;
+use TorfsICT\Bundle\CodeMonitoringBundle\ExceptionRenderer\ExceptionRenderer;
 
 final readonly class ApiWriter
 {
@@ -13,6 +15,7 @@ final readonly class ApiWriter
 
     public function __construct(
         private HttpClientInterface $httpClient,
+        private ExceptionRenderer $renderer,
         private string $endpoint,
         private string $project,
         private string $environment,
@@ -28,33 +31,41 @@ final readonly class ApiWriter
         }
     }
 
-    public function exception(string $title, string $contents, bool $caught): void
+    public function exception(\Throwable $throwable): void
     {
-        $json = [
-            'project' => $this->project,
-            'environment' => $this->environment,
-            'secret' => $this->secret,
-            'title' => $title,
-            'contents' => $contents,
-            'caught' => $caught,
-        ];
-
-        $this->useSpool ? $this->queue('exception', $json) : $this->post($this->url.'/exception', $json);
+        $json = $this->toArray($throwable);
+        $json['caught'] = $throwable instanceof CaughtException;
+        $this->process('exception', $json);
     }
 
-    public function deprecation(string $file, int $line, string $message, string $contents): void
+    public function deprecation(\Throwable $throwable): void
     {
-        $json = [
+        $json = $this->toArray($throwable);
+        $this->process('deprecation', $json);
+    }
+
+    /**
+     * @param array<string, mixed> $json
+     */
+    private function process(string $type, array $json): void
+    {
+        $this->useSpool ? $this->queue($type, $json) : $this->post($this->url.'/'.$type, $json);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function toArray(\Throwable $throwable): array
+    {
+        return [
             'project' => $this->project,
             'environment' => $this->environment,
             'secret' => $this->secret,
-            'file' => $file,
-            'line' => $line,
-            'message' => $message,
-            'contents' => $contents,
+            'file' => $throwable->getFile(),
+            'line' => $throwable->getLine(),
+            'message' => $throwable->getMessage(),
+            'contents' => $this->renderer->render($throwable),
         ];
-
-        $this->useSpool ? $this->queue('deprecation', $json) : $this->post($this->url.'/deprecation', $json);
     }
 
     /**
