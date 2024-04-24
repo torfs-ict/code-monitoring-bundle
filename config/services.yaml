@@ -3,28 +3,35 @@ parameters:
     torfs_io_monitoring.project: "%env(resolve:TORFS_IO_MONITORING_PROJECT)%"
     torfs_io_monitoring.environment: "%kernel.environment%"
     torfs_io_monitoring.secret: "%env(resolve:TORFS_IO_MONITORING_SECRET)%"
+    torfs_io_monitoring.spool: "%env(resolve:default::TORFS_IO_MONITORING_SPOOL)%"
 
 services:
     torfs_io_monitoring.writer:
         class: TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter
         arguments:
             $httpClient: '@http_client'
+            $renderer: '@torfs_io_monitoring.renderer'
             $endpoint: "%torfs_io_monitoring.endpoint%"
             $project: '%torfs_io_monitoring.project%'
             $environment: '%torfs_io_monitoring.environment%'
             $secret: '%torfs_io_monitoring.secret%'
+            $spool: '%torfs_io_monitoring.spool%'
 
     torfs_io_monitoring.renderer:
         class: TorfsICT\Bundle\CodeMonitoringBundle\ExceptionRenderer\ExceptionRenderer
         arguments:
             $tokenStorage: '@security.token_storage'
 
+    torfs_io_monitoring.deprecation_handler:
+        class: TorfsICT\Bundle\CodeMonitoringBundle\DeprecationHandler\DeprecationHandler
+        arguments:
+            $writer: '@torfs_io_monitoring.writer'
+            $endpoint: "%torfs_io_monitoring.endpoint%"
+
     torfs_io_monitoring.exception_listener:
         class: TorfsICT\Bundle\CodeMonitoringBundle\EventListener\ExceptionListener
         arguments:
-            $renderer: '@torfs_io_monitoring.renderer'
             $writer: '@torfs_io_monitoring.writer'
-            $logDir: '%kernel.logs_dir%'
             $endpoint: "%torfs_io_monitoring.endpoint%"
         tags:
             - name: kernel.event_listener
@@ -33,3 +40,10 @@ services:
             - name: kernel.event_listener
               event: console.error
               method: 'cli'
+
+    torfs_io_monitoring.spool_command:
+        class: TorfsICT\Bundle\CodeMonitoringBundle\Command\SendSpoolCommand
+        arguments:
+            $writer: '@torfs_io_monitoring.writer'
+        tags:
+            - console.command

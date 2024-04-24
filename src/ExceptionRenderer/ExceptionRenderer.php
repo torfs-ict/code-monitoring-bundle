@@ -22,6 +22,28 @@ final readonly class ExceptionRenderer
             $this->formatBacktrace(debug_backtrace());
     }
 
+    public function getUserIdentifier(): ?string
+    {
+        $ret = null;
+
+        $token = $this->tokenStorage->getToken();
+        if (null !== $token) {
+            $user = $token->getUser();
+            if ($user instanceof UserInterface) {
+                $ret = $user->getUserIdentifier();
+
+                if ($token instanceof SwitchUserToken) {
+                    $impersonator = $token->getOriginalToken()->getUser();
+                    if ($impersonator instanceof UserInterface) {
+                        $ret = sprintf('%s as %s', $impersonator->getUserIdentifier(), $ret);
+                    }
+                }
+            }
+        }
+
+        return $ret;
+    }
+
     /**
      * @param array<int, mixed[]> $backtrace
      */

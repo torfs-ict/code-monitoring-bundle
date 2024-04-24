@@ -8,32 +8,14 @@ use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter\ApiWriter;
-use TorfsICT\Bundle\CodeMonitoringBundle\Exception\CaughtException;
-use TorfsICT\Bundle\CodeMonitoringBundle\ExceptionRenderer\ExceptionRenderer;
 
 readonly class ExceptionListener
 {
-    private string $directory;
     private bool $enabled;
 
-    public function __construct(
-        private ExceptionRenderer $renderer,
-        private ApiWriter $writer,
-        string $logDir,
-        string $endpoint,
-    ) {
-        $dirname = sprintf('%s/exceptions', $logDir);
-        if (!is_dir($dirname)) {
-            mkdir($dirname, 0755, true);
-        }
-        $this->directory = $dirname;
-
-        $this->enabled = !empty($endpoint);
-    }
-
-    public function getLogDirectory(): string
+    public function __construct(private ApiWriter $writer, string $endpoint)
     {
-        return $this->directory;
+        $this->enabled = !empty($endpoint);
     }
 
     public function http(ExceptionEvent $event): void
@@ -52,18 +34,7 @@ readonly class ExceptionListener
             return;
         }
 
-        $name = explode(' ', microtime());
-        $caught = '';
-        if ($throwable instanceof CaughtException) {
-            $throwable = $throwable->getCaughtException();
-            $caught = 'caught_';
-        }
-        $path = sprintf('%s/%s%s%s.log', $this->directory, $caught, $name[1], mb_substr($name[0], 1));
-
-        $contents = $this->renderer->render($throwable);
-
-        file_put_contents($path, $contents);
-        $this->writer->exception($throwable->getMessage(), $contents, '' !== $caught);
+        $this->writer->exception($throwable);
     }
 
     private function shouldIgnore(\Throwable $throwable): bool
