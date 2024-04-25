@@ -33,14 +33,14 @@ final readonly class ApiWriter
 
     public function exception(\Throwable $throwable): void
     {
-        $json = $this->toArray($throwable);
+        $json = $this->toArray($throwable, true);
         $json['caught'] = $throwable instanceof CaughtException;
         $this->process('exception', $json);
     }
 
     public function deprecation(\Throwable $throwable): void
     {
-        $json = $this->toArray($throwable);
+        $json = $this->toArray($throwable, false);
         $this->process('deprecation', $json);
     }
 
@@ -55,14 +55,14 @@ final readonly class ApiWriter
     /**
      * @return array<string, mixed>
      */
-    private function toArray(\Throwable $throwable): array
+    private function toArray(\Throwable $throwable, bool $includeDetails): array
     {
         return [
             'file' => $throwable->getFile(),
             'line' => $throwable->getLine(),
             'user' => $this->renderer->getUserIdentifier(),
             'message' => $throwable->getMessage(),
-            'contents' => $this->renderer->render($throwable),
+            'contents' => $this->renderer->render($throwable, $includeDetails),
         ];
     }
 
