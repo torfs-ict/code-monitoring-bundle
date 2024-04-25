@@ -21,7 +21,7 @@
         }
     },
     "require": {
-        "php": ">=7.2.5",
+        "php": ">=8.2",
         "symfony/config": "5.*|6.*|7.*",
         "symfony/console": "5.*|6.*|7.*",
         "symfony/dependency-injection": "5.*|6.*|7.*",
