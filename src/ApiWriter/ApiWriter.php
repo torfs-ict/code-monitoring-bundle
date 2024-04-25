@@ -31,7 +31,7 @@ final class ApiWriter
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ExceptionRenderer $renderer,
-        private readonly RequestStack $requestStack,
+        private readonly ?RequestStack $requestStack,
         private readonly ?Stopwatch $stopwatch,
         private readonly ?Profiler $profiler,
         private readonly string $endpoint,
@@ -167,7 +167,7 @@ final class ApiWriter
 
     public function onConsoleTerminate(ConsoleTerminateEvent $event): void
     {
-        $request = $this->requestStack->getCurrentRequest();
+        $request = $this->requestStack?->getCurrentRequest();
         if (!$request instanceof CliRequest || $request->command !== $event->getCommand()) {
             return;
         }

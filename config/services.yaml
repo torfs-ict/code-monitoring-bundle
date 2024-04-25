@@ -11,9 +11,9 @@ services:
         arguments:
             $httpClient: '@http_client'
             $renderer: '@torfs_io_monitoring.renderer'
-            $requestStack: '@.virtual_request_stack'
-            $stopwatch: '@debug.stopwatch'
-            $profiler: '@profiler'
+            $requestStack: '@?.virtual_request_stack'
+            $stopwatch: '@?debug.stopwatch'
+            $profiler: '@?profiler'
             $endpoint: "%torfs_io_monitoring.endpoint%"
             $project: '%torfs_io_monitoring.project%'
             $environment: '%torfs_io_monitoring.environment%'
