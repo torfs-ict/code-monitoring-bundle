@@ -15,11 +15,11 @@ final readonly class ExceptionRenderer
     {
     }
 
-    public function render(\Throwable $throwable): string
+    public function render(\Throwable $throwable, bool $includeDetails): string
     {
         return $throwable->getMessage()."\n\n".
             $throwable->getTraceAsString()."\n\n".
-            $this->formatBacktrace(debug_backtrace());
+            $this->formatBacktrace(debug_backtrace(), $includeDetails);
     }
 
     public function getUserIdentifier(): ?string
@@ -47,14 +47,16 @@ final readonly class ExceptionRenderer
     /**
      * @param array<int, mixed[]> $backtrace
      */
-    private function formatBacktrace(array $backtrace): string
+    private function formatBacktrace(array $backtrace, bool $includeDetails): string
     {
         $string = '';
 
-        if (PHP_SAPI !== 'cli') {
-            $string .= "\nREQUEST DETAILS\n".$this->getRequestDetails();
-        } else {
-            $string .= "\nCOMMAND DETAILS\n".$this->getCommandDetails();
+        if ($includeDetails) {
+            if (PHP_SAPI !== 'cli') {
+                $string .= "\nREQUEST DETAILS\n".$this->getRequestDetails();
+            } else {
+                $string .= "\nCOMMAND DETAILS\n".$this->getCommandDetails();
+            }
         }
 
         $string .= "\nFULL BACKTRACE\n";
