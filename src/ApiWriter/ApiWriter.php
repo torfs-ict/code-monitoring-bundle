@@ -57,13 +57,15 @@ final readonly class ApiWriter
      */
     private function toArray(\Throwable $throwable, bool $includeDetails): array
     {
-        return [
+        $array = [
             'file' => $throwable->getFile(),
             'line' => $throwable->getLine(),
-            'user' => $this->renderer->getUserIdentifier(),
+            'user' => $includeDetails ? $this->renderer->getUserIdentifier() : null,
             'message' => $throwable->getMessage(),
             'contents' => $this->renderer->render($throwable, $includeDetails),
         ];
+
+        return $array;
     }
 
     /**
