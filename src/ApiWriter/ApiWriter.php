@@ -90,7 +90,11 @@ final class ApiWriter
     private function queue(string $type, array $json): void
     {
         // Use a hash of the array to create the filename to prevent duplicate files
-        $hash = hash('crc32', serialize($json));
+        $hash = md5(serialize([
+            $json['file'],
+            $json['line'],
+            $json['message'],
+        ]));
         $path = sprintf('%s/spool.%s-%s', $this->spool, $type, $hash);
         if (!file_exists($path)) {
             file_put_contents($path, json_encode($json));
