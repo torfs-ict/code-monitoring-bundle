@@ -6,6 +6,7 @@ namespace TorfsICT\Bundle\CodeMonitoringBundle\ApiWriter;
 
 use Symfony\Component\Console\Debug\CliRequest;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,9 +33,11 @@ final class ApiWriter
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ExceptionRenderer $renderer,
+        private readonly Filesystem $filesystem,
         private readonly ?RequestStack $requestStack,
         private readonly ?Stopwatch $stopwatch,
         private readonly ?Profiler $profiler,
+        private readonly string $projectDir,
         private readonly string $endpoint,
         private readonly string $project,
         private readonly string $environment,
@@ -79,8 +82,10 @@ final class ApiWriter
             $httpStatusCode = $throwable instanceof HttpExceptionInterface ? $throwable->getStatusCode() : null;
         }
 
+        $relativePath = rtrim($this->filesystem->makePathRelative($throwable->getFile(), $this->projectDir), '/');
+
         $array = [
-            'file' => $throwable->getFile(),
+            'file' => $relativePath,
             'line' => $throwable->getLine(),
             'user' => $includeDetails ? $this->renderer->getUserIdentifier() : null,
             'message' => $throwable->getMessage(),
