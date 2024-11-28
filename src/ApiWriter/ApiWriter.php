@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -73,12 +74,18 @@ final class ApiWriter
      */
     private function toArray(\Throwable $throwable, bool $includeDetails): array
     {
+        $httpStatusCode = null;
+        if ($includeDetails) {
+            $httpStatusCode = $throwable instanceof HttpExceptionInterface ? $throwable->getStatusCode() : null;
+        }
+
         $array = [
             'file' => $throwable->getFile(),
             'line' => $throwable->getLine(),
             'user' => $includeDetails ? $this->renderer->getUserIdentifier() : null,
             'message' => $throwable->getMessage(),
             'contents' => $this->renderer->render($throwable, $includeDetails),
+            'httpStatusCode' => $httpStatusCode,
         ];
 
         return $array;
