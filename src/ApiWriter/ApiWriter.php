@@ -100,6 +100,7 @@ final class ApiWriter
             'message' => $throwable->getMessage(),
             'contents' => $this->renderer->render($throwable, $includeDetails),
             'httpStatusCode' => $httpStatusCode,
+            'caught' => $throwable instanceof CaughtException,
         ];
 
         return $array;
@@ -217,7 +218,6 @@ final class ApiWriter
     {
         foreach ($this->queue as $throwable) {
             $json = $this->toArray($throwable, true);
-            $json['caught'] = $throwable instanceof CaughtException;
 
             if (null !== $this->profiler) {
                 $profile = $this->profiler->collect($request, $response, $throwable);
