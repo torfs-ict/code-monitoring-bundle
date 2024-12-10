@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Profiler\Profile;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use TorfsICT\Bundle\CodeMonitoringBundle\Exception\BypassSpoolException;
 use TorfsICT\Bundle\CodeMonitoringBundle\Exception\CaughtException;
 use TorfsICT\Bundle\CodeMonitoringBundle\ExceptionRenderer\ExceptionRenderer;
 
@@ -55,7 +56,15 @@ final class ApiWriter
 
     public function exception(\Throwable $throwable): void
     {
-        $this->queue->attach($throwable);
+        if (!$throwable instanceof BypassSpoolException) {
+            $this->queue->attach($throwable);
+
+            return;
+        }
+
+        $json = $this->toArray($throwable->getException(), true);
+        $type = 'exception';
+        $this->post($this->url.'/'.$type, $json);
     }
 
     public function deprecation(\Throwable $throwable): void
